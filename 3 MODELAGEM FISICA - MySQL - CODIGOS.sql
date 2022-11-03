@@ -272,7 +272,647 @@ SELECT FROM CLIENTE
 WHERE NOME = 'CARLA'
 AND EMAIL = 'LILIAN@HOTMAIL.COM'; -- Aqui só vai aparecer a carla com o email errado pq é a unica que contempla as 2 condições
 
-/* COMMIT E ROLL BACK */ 
+---------------------------------------------
+
+MODELANDO O BANCO DE DADOS: CONSIDERANDO FK, PRIMARY KEY, OBRIGATORIEDADE, CARDINALIDADE:
+
+
+/* ANOTAÇÕES: 
+- NOT NULL - NÃO PODE FICAR VAZIO!!
+- ENUM: DOMINIO - CAIXA DE OPÇÕES COM INFORMAÇÕES FIXAS (SEXO, F/M) - (ENUM -->> só existe no mySQL)
+- BANCO DE DADOS RELACIONAL - Tem que seguir regras (rígido)
+- UNIQUE - COLUNA DE EMAIL E CPF não podem ser REPETIDO ENTRE USUÁRIOS
+
+
+FOREIGN KEY
+Chave estrangeira: Chave primaria de uma tabela (primary key) que vai até a outra tabela para fazer referência entre registros (linka um com o outro)
+DEPENDE DIRETAMENTE DA CARDINALIDADE!! (regra de negocio que define)
+
+EM RELACIONAMENTOS 1X1 A FK FICA NA TABELA MAIS FRACA (depende do negocio: Loja = cliente | Estacionamento = Carro)
+EM RELACIONAMENTO 1XN A FK FICA NA CARDINALIDADE N 
+
+A FK TEM QUE SER DO MESMO TIPO QUE VC DEFINIU (IDCLIENTE INT = ID_CLIENTE (FK) INT)
+
+PARA DEFINIR O RELACIONAMENTO:
+Se eu coloco UNIQUE em um local o banco entende que não pode ser repetido, então ao descrever : "ID_CLIENTE INT UNIQUE" vc também está dizendo que o relacionamento é 1x1
+
+para dizer 1xN é só não colocar o UNIQUE (ver telefones) */
+
+
+-> SELEÇÃO, PROJEÇÃO, (já vimos) E JUNÇÃO:
+
+/*
+(query buscar dados no banco e trazer informação)
+
+
+PROJEÇÃO: Tudo que vc quer ver na tela = SELECT
+
+SELECT * from cliente
+
+SELECT now (); (traz data e hora)*/
+
+
+
+SELEÇÃO: 
+/* 
+Fazer meu um subconjunto de um conjunto total de registro de uma tabela
+Clausula de seleção: WHERE
+
+SELECT NOME, SEXO EMAIL FROM CLIENTE
+WHERE SEXO = 'F'; <--- ONDE MORA A SELEÇÃO
+
+(Da pra juntar usando o Where, funciona, mas não é o mais indicado)
+
+
+Resumindo: 
+SELECT NOME, SEXO EMAIL  ----> PROJEÇÃO
+FROM CLIENTE  ----> ORIGEM
+WHERE SEXO = 'F';  ----> SELEÇÃO*/
+
+
+COMANDOS DML
+
+/*
+
+LINGUAGEM DE MAQUINA = BINÁRIA (01)
+
+PROG NIVEL MAIS ALTO - ORIENTADO À OBJETO = JAVA, PHP, C#
+
+LINGUAGEM DE 4º GERAÇÃO - PARECIDA COM A LINGUAGEM HUMANA = SQL 
+
+CATEGORIAS:
+	DML - DATA MANIPULATION LANGUAGE (manipulação)
+	DDL - DATA DEFINITION LANGUAGE (definição/tipagem)
+	DCL - DATA CONTROL LANGUAGE (controle de acesso)
+	TCL - TRANSACTION CONTROL LANGUAGE (controle de transação - atomicidade)
+
+---------------------------
+
+DML - DATA MANIPULATION LANGUAGE (manipulação):
+	INSERT/ SELECT/ WHERE/ DELETE
+
+----------------------------
+
+DDL - DATA DEFINITION LANGUAGE (definição/tipagem)
+	Quando vc vai criar a tabela e define os tipos de campos é uma DDL
+
+Varchar, char, enum, INT,  e modificação de tabela. */
+
+
+
+
+DROP TABLE = APAGA A TABELA!!!
+
+
+CREATE DATABASE COMERCIO;
+
+USE COMERCIO;
+
+CREATE TABLE CLIENTE(
+	IDCLIENTE INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30) NOT NULL,
+	SEXO ENUM('M', 'F') NOT NULL,
+	EMAIL VARCHAR(50) UNIQUE,
+	CPF VARCHAR(15) UNIQUE
+);
+
+CREATE TABLE ENDERECO (
+	IDENDERECO INT PRIMARY KEY AUTO_INCREMENT,
+	RUA VARCHAR(30) NOT NULL, 
+	BAIRRO VARCHAR(30) NOT NULL, 
+	CIDADE VARCHAR(30) NOT NULL, 
+	ESTADO CHAR(2) NOT NULL,
+	ID_CLIENTE INT UNIQUE,
+	FOREIGN KEY (ID_CLIENTE) REFERENCES CLIENTE(IDCLIENTE)
+);
+
+CREATE TABLE TELEFONE (
+	IDTELEFONE INT PRIMARY KEY AUTO_INCREMENT,
+	TIPO ENUM ('RES', 'COM', 'CEL') NOT NULL, 
+	NUMERO VARCHAR(10) NOT NULL,
+	ID_CLIENTE INT,
+	FOREIGN KEY (ID_CLIENTE) REFERENCES CLIENTE(IDCLIENTE)
+);
+
+
+INSERT INTO CLIENTE (IDCLIENTE, NOME, SEXO, EMAIL, CPF) VALUES 
+	(NULL, 'JOAO', 'M', 'JOAO@GMAIL.COM', '78945612364'),
+	(NULL, 'CARLOS', 'M', 'CARLOS@GMAIL.COM', '14774489755'),
+	(NULL, 'ANA', 'F', 'ANA@GMAIL.COM', '78945632145'),
+	(NULL, 'CLARA', 'F', NULL, '45698712333'),
+	(NULL, 'JORGE', 'M', 'JORGE@GMAIL.COM', '54879213645'),
+	(NULL, 'CELIA', 'F', 'CELIA@GMAIL.COM', '21535468795');
+
+
+SELECT * FROM CLIENTE
+
++-----------+--------+------+------------------+----------------+
+| IDCLIENTE | NOME   | SEXO | EMAIL            | CPF            |
++-----------+--------+------+------------------+----------------+
+|         1 | JOAO   | M    | JOAO@GMAIL.COM   | 78945612364    |
+|         7 | CARLOS | M    | CARLOS@GMAIL.COM | 14774489756745 |
+|         8 | ANA    | F    | ANA@GMAIL.COM    | 78945632145    |
+|         9 | CLARA  | F    | NULL             | 45698712333    |
+|        10 | JORGE  | M    | JORGE@GMAIL.COM  | 54879213645    |
+|        11 | CELIA  | F    | CELIA@GMAIL.COM  | 21535468795    |
++-----------+--------+------+------------------+----------------+
+
+
+DESC ENDERECO;
+
+INSERT INTO ENDERECO (IDENDERECO, RUA, BAIRRO, CIDADE, ESTADO, ID_CLIENTE) VALUES
+	(NULL,'RUA ANTONIO SA','CENTRO','B. HORIZONTE','MG',1),
+	(NULL,'RUA CAPITAO HERMES','CENTRO','RIO DE JANEIRO','RJ',7),
+	(NULL,'RUA PRES VARGAS','JARDINS','SAO PAULO','SP',8),
+	(NULL,'RUA ALFANDEGA','ESTACIO','RIO DE JANEIRO','RJ',9),
+	(NULL,'RUA DO OUVIDOR','FLAMENGO','RIO DE JANEIRO','RJ',10),
+	(NULL,'RUA URUGUAIANA','CENTRO','VITORIA','ES',11);
+
++------------+--------------------+----------+----------------+--------+------------+
+| IDENDERECO | RUA                | BAIRRO   | CIDADE         | ESTADO | ID_CLIENTE |
++------------+--------------------+----------+----------------+--------+------------+
+|          1 | RUA ANTONIO SA     | CENTRO   | B. HORIZONTE   | MG     |          1 |
+|          2 | RUA CAPITAO HERMES | CENTRO   | RIO DE JANEIRO | RJ     |          7 |
+|          3 | RUA PRES VARGAS    | JARDINS  | SAO PAULO      | SP     |          8 |
+|          4 | RUA ALFANDEGA      | ESTACIO  | RIO DE JANEIRO | RJ     |          9 |
+|          5 | RUA DO OUVIDOR     | FLAMENGO | RIO DE JANEIRO | RJ     |         10 |
+|          6 | RUA URUGUAIANA     | CENTRO   | VITORIA        | ES     |         11 |
++------------+--------------------+----------+----------------+--------+------------+
+
+
+DESC TELEFONE;
+
+INSERT INTO TELEFONE VALUES(NULL,'CEL','45655455',1);
+
+INSERT INTO TELEFONE VALUES(NULL,'RES','56576876',7);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','87866896',1);
+INSERT INTO TELEFONE VALUES(NULL,'COM','54768899',8);
+INSERT INTO TELEFONE VALUES(NULL,'RES','99667587',1);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','78989765',8);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','99766676',8);
+INSERT INTO TELEFONE VALUES(NULL,'COM','66687899',10);
+INSERT INTO TELEFONE VALUES(NULL,'RES','89986668',9);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','88687909',7);
+
+
++------------+------+----------+------------+
+| IDTELEFONE | TIPO | NUMERO   | ID_CLIENTE |
++------------+------+----------+------------+
+|          1 | CEL  | 45655455 |          1 |-
+|          2 | RES  | 56576876 |          7 |+
+|          3 | CEL  | 87866896 |          1 |-
+|          4 | COM  | 54768899 |          8 |*
+|          5 | RES  | 99667587 |          1 |-
+|          6 | CEL  | 78989765 |          8 |*
+|          7 | CEL  | 99766676 |          8 |*
+|          8 | COM  | 66687899 |         10 |
+|          9 | RES  | 89986668 |          9 |
+|         10 | CEL  | 88687909 |          7 |+
++------------+------+----------+------------+
+
+-- VALORES SE REPETEM PQ NÃO TEM A CLAUSULA UNIQUE, OU SEJA É CARDINALIDADE = N
+
+JOIN:
+
+/* Ação de unir informações de 2 tabelas diferentes que são ligadas pelo mesmo ID. 
+No caso abaixo, o JOAO (ID1) mora no centro do RJ, mas não da pra ver na mesma tabela (tabelas !=) a função JOIN
+junta as informações pelo ID delas.
+
+SELECT NOME, EMAIL, IDCLIENTE
+FROM CLIENTE;  <<-- tabela DIFERENTE
+
+SELECT ID_CLIENTE, BAIRRO, CIDADE
+FROM ENDERECO;  <<-- tabela DIFERENTE
+
++--------+----------------+-----------+ +------------+----------+----------------+
+| NOME   | EMAIL          | IDCLIENTE | | ID_CLIENTE | BAIRRO   | CIDADE         |
++--------+----------------+-----------+ +------------+----------+----------------+
+| JOAO   | JOAOA@IG.COM   |         1 | |          1 | CENTRO   | RIO DE JANEIRO |
+| CARLOS | CARLOSA@IG.COM |         2 | |          2 | ESTACIO  | RIO DE JANEIRO |
+| ANA    | ANA@IG.COM     |         3 | |          3 | JARDINS  | SAO PAULO      |
+| CLARA  | NULL           |         4 | |          4 | CENTRO   | B. HORIZONTE   |
+| CELIA  | JCELIA@IG.COM  |         6 | |          5 | CENTRO   | VITORIA        |
+| JORGE  | JORGE@IG.COM   |         5 | |          6 | FLAMENGO | RIO DE JANEIRO |
++--------+----------------+-----------+ +------------+----------+----------------+
+
+
+PODE USAR O WHERE PARA JUNTAR ESSAS INFORMAÇÕES. FUNCIONA, MAS NÃO É O INDICADO (WHERE = SELEÇÃO):
+Quando se usa WHERE o que fazemos é usar a tabela verdade para mostrar o que a gente quer, mas isso o é fazer o
+banco procurar por informação que sempre é verdade. 
+
+SELECT NOME, BAIRRO
+FROM CLIENTE, ENDERECO
+WHERE IDCLIENTE = ID_CLIENTE;
+
+INNER JOIN:
+
+Inner Join pega as informações de dentro que são iguais. 
+Se tiver uma FK que não tiver informação correspondente em outra tabela, ela não aparece na chamada. 
+
+SELECT NOME, BAIRRO
+FROM CLIENTE
+INNER JOIN ENDERECO
+ON IDCLIENTE = ID_CLIENTE;
+
+WHERE SEXO = 'F'; <-- Se tiver que procurar add 
+
+
+SELECT NOME, SEXO, EMAIL, TIPO, NUMERO
+FROM CLIENTE
+	INNER JOIN TELEFONE
+	ON IDCLIENTE = ID_CLIENTE;
+
+Os clientes que tiverem mais de 1 telefone apareceram todas as vezes que tiverem telefones para ser mostrado.
+
+
+JUNTAR MAIS DE 2 TABELAS: 
+O uso clausula JOIN é irrestrito, da pra juntar quantas tabelas precisar
+
+SELECT NOME, SEXO, BAIRRO, CIDADE, TIPO, NUMERO
+FROM CLIENTE
+INNER JOIN ENDERECO
+ON IDCLIENTE = ID_CLIENTE
+INNER JOIN TELEFONE
+ON IDCLIENTE = ID_CLIENTE;
+
+
+ERRO DE AMBIGUIDADE: Chave com o mesmo nome nas 2 tabelas.
+Poderia ter sido criado a chave como Id_cliente_telefone, mas nem sempre isso é possível então usar: 
+
+
+SELECT cliente.NOME, cliente.SEXO, endereco.BAIRRO, endereco.CIDADE, telefone.TIPO, telefone.NUMERO
+FROM CLIENTE
+INNER JOIN ENDERECO
+ON cliente.IDCLIENTE = endereco.ID_CLIENTE
+INNER JOIN TELEFONE
+ON cliente.IDCLIENTE = telefone.ID_CLIENTE;
+
+
+Outra maneira de ponterar as coisas: (Melhora a performace) USANDO ALIAS:
+
+SELECT c.NOME, c.SEXO, e.BAIRRO, e.CIDADE, t.TIPO, t.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON c.IDCLIENTE = e.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON IDCLIENTE = t.ID_CLIENTE;
+
+*/
+
+-- Valores preenchidos na tabela no exercicio -- 
+
+/* IDS E EMAIL DAS MULHERES QUE MOREM NO CENTRO DO RIO DE JANEIRO E 
+NAO TENHAM CELULAR */
+
+SELECT C.IDCLIENTE, C.NOME, C.SEXO, C.EMAIL, E.BAIRRO, E.ESTADO, T.TIPO, T.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+WHERE SEXO = 'F' 
+AND (ESTADO = 'RJ' AND BAIRRO = 'CENTRO')
+AND (TIPO = 'COM' OR TIPO ='RES');
+-- Se não colocar o parenteses (precedência), todo mundo que tem telefone RES vai aparecer na pesquisa. -- 
+
++-----------+---------+------+-------------------+--------+--------+------+----------+
+| IDCLIENTE | NOME    | SEXO | EMAIL             | BAIRRO | ESTADO | TIPO | NUMERO   |
++-----------+---------+------+-------------------+--------+--------+------+----------+
+|        11 | GIOVANA | F    | NULL              | CENTRO | RJ     | COM  | 55689654 |  -> GIOVANA TEM CELULAR MAS APARECE AQUI (NECESSÁRIO SUBQUERY)
+|        19 | CARMEM  | F    | CARMEM@IG.COM     | CENTRO | RJ     | RES  | 77455786 |
+|        19 | CARMEM  | F    | CARMEM@IG.COM     | CENTRO | RJ     | RES  | 89766554 |
+|        20 | ADRIANA | F    | ADRIANA@GMAIL.COM | CENTRO | RJ     | RES  | 77755785 |
+|        20 | ADRIANA | F    | ADRIANA@GMAIL.COM | CENTRO | RJ     | COM  | 44522578 |
++-----------+---------+------+-------------------+--------+--------+------+----------+
+
+--------------------------
+
+TRATANDO VALORES NULOS: 
+
+
+IFNULL() = ORACLE/ SQL SERVER / POST / ETC. 
+-- É UMA FUNÇÃO (now () também é uma função)
+
+
+--Como se usa: 
+IFNULL(COLUNA<-parâmetro, STRING<-msg)
+
+
+-- Exemplo:
+SELECT  C.NOME, 
+		IFNULL(C.EMAIL, '************'),
+		E.ESTADO, 
+		T.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
+
++---------+---------------------------------+--------+----------+
+| NOME    | IFNULL(C.EMAIL, '************') | ESTADO | NUMERO   | <- COLOCAR UM ALIAS PRA MUDAR O NOME DA COLUNA
++---------+---------------------------------+--------+----------+
+| JOAO    | JOAO@GMAIL.COM                  | RJ     | 87866896 |
+| JOAO    | JOAO@GMAIL.COM                  | RJ     | 99667587 |
+| JOAO    | JOAO@GMAIL.COM                  | RJ     | 66687899 |
+| CARLOS  | CARLOS@GMAIL.COM                | RJ     | 54768899 |
+| CARLOS  | CARLOS@GMAIL.COM                | RJ     | 88687909 |
+| ANA     | ANA@GMAIL.COM                   | SP     | 78989765 |
+| ANA     | ANA@GMAIL.COM                   | SP     | 99766676 |
+| JORGE   | JORGE@GMAIL.COM                 | ES     | 78458743 |
+| JORGE   | JORGE@GMAIL.COM                 | ES     | 56576876 |
+| JORGE   | JORGE@GMAIL.COM                 | ES     | 89986668 |
+| FLAVIO  | FLAVIO@IG.COM                   | MG     | 68976565 |
+| FLAVIO  | FLAVIO@IG.COM                   | MG     | 99656675 |
+| GIOVANA | ************                    | RJ     | 33567765 |
+| GIOVANA | ************                    | RJ     | 88668786 |
+| GIOVANA | ************                    | RJ     | 55689654 |
+| KARLA   | KARLA@GMAIL.COM                 | RJ     | 88687979 |
+| DANIELE | DANIELE@GMAIL.COM               | ES     | 88965676 |
+| EDUARDO | ************                    | PR     | 89966809 |
+| ANTONIO | ANTONIO@IG.COM                  | SP     | 88679978 |
+| ANTONIO | ANTONIO@UOL.COM                 | PR     | 99655768 |
+| ELAINE  | ELAINE@GLOBO.COM                | SP     | 89955665 |
+| CARMEM  | CARMEM@IG.COM                   | RJ     | 77455786 |
+| CARMEM  | CARMEM@IG.COM                   | RJ     | 89766554 |
+| ADRIANA | ADRIANA@GMAIL.COM               | RJ     | 77755785 |
+| ADRIANA | ADRIANA@GMAIL.COM               | RJ     | 44522578 |
++---------+---------------------------------+--------+----------+
+
+SELECT  C.NOME, 
+		IFNULL(C.EMAIL, '************') AS EMAIL,
+		E.ESTADO, 
+		T.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
+
++---------+-------------------+--------+----------+
+| NOME    | EMAIL             | ESTADO | NUMERO   |
++---------+-------------------+--------+----------+
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 87866896 |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 99667587 |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 66687899 |
+| CARLOS  | CARLOS@GMAIL.COM  | RJ     | 54768899 |
+| CARLOS  | CARLOS@GMAIL.COM  | RJ     | 88687909 |
+| ANA     | ANA@GMAIL.COM     | SP     | 78989765 |
+| ANA     | ANA@GMAIL.COM     | SP     | 99766676 |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 78458743 |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 56576876 |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 89986668 |
+| FLAVIO  | FLAVIO@IG.COM     | MG     | 68976565 |
+| FLAVIO  | FLAVIO@IG.COM     | MG     | 99656675 |
+| GIOVANA | ************      | RJ     | 33567765 |
+| GIOVANA | ************      | RJ     | 88668786 |
+| GIOVANA | ************      | RJ     | 55689654 |
+| KARLA   | KARLA@GMAIL.COM   | RJ     | 88687979 |
+| DANIELE | DANIELE@GMAIL.COM | ES     | 88965676 |
+| EDUARDO | ************      | PR     | 89966809 |
+| ANTONIO | ANTONIO@IG.COM    | SP     | 88679978 |
+| ANTONIO | ANTONIO@UOL.COM   | PR     | 99655768 |
+| ELAINE  | ELAINE@GLOBO.COM  | SP     | 89955665 |
+| CARMEM  | CARMEM@IG.COM     | RJ     | 77455786 |
+| CARMEM  | CARMEM@IG.COM     | RJ     | 89766554 |
+| ADRIANA | ADRIANA@GMAIL.COM | RJ     | 77755785 |
+| ADRIANA | ADRIANA@GMAIL.COM | RJ     | 44522578 |
++---------+-------------------+--------+----------+
+
+---------------------------------------
+
+VIEW (ponteiro):  -- DDL
+
+SELECT  C.IDCLIENTE AS ID, 
+		C.NOME, 
+		C.SEXO, 
+		C.EMAIL,
+		E.CIDADE, 
+		E.BAIRRO, 
+		E.ESTADO, 
+		T.TIPO, 
+		T.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
+/* Se eu to tendo que usar isso o tempo todo preciso ficar escrevendo isso o tempo todo? 
+
+Um bloco de notas com seus resumos/scripts/anotações é sempre bem vindo, mas tem outra maneira de ajudar: VIEW
+View: nome que vc da pra alo que vc quer chamar */
+
+CREATE VIEW RELATORIO AS
+SELECT  C.IDCLIENTE AS ID, 
+		C.NOME, 
+		C.SEXO, 
+		C.EMAIL,
+		E.CIDADE, 
+		E.BAIRRO, 
+		E.ESTADO, 
+		T.TIPO, 
+		T.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
+
+SELECT * FROM RELATORIO; -- MOSTRA TUDO QUE TA ALI DENTRO (Y)
+
+/* 
+SHOW DATABASES -- Bando de dados
+SHOW TABLES -- Tabelas  >>> E VIEWS <<<
+SHOW VIEWS; -- NÃO EXISTE
+
+** View não duiplica os dados no banco. Ela é basicamente uma tabela virtual ** */
+
+
+APAGANDO UMA VIEW: 
+
+DROP VIEW RELATORIO;
+
+/* PRA FICAR MAIS FÁCIL DE VISUALIZAR AS VIEWS USE UM PREFIXO: 
+V_ nomedaVIEW */
+
+CREATE VIEW V_RELATORIO AS
+SELECT  C.IDCLIENTE AS ID, 
+		C.NOME, 
+		C.SEXO, 
+		IFNULL(C.EMAIL, '*********') AS 'EMAIL',
+		E.CIDADE, 
+		E.BAIRRO, 
+		E.ESTADO, 
+		T.TIPO, 
+		T.NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
+SELECT * FROM V_RELATORIO;
+
+/* Agora tudo que aparecer em 'show tables' e tiver V_ é uma VIEW */
+
+IMPORTANTE: Usar uma view pode comprometer o desempenho das respostas, uma vez que vc vai ter que chamar a 
+tabela (VIEW) que vem de outra tabela 
+-- Vc monta sua tabela para ser puxada da tabela mãe, e isso leva um tempo, nem seja mínimo = efeito colateral
+
+
+
+ESSE VIEW FAZ UMA JUNÇÃO DE TODAS AS TABELAS, ENTÃO EU POSSO USAR ELA PARA FAZER UMA PROJEÇÃO SEM FICAR USANDO
+INNER JOIN :
+
+SELECT NOME, NUMERO, ESTADO 
+FROM V_RELATORIO;
+
+/* IMPORTANTE: 
+Usar o cógido dessa maneira:
+
+SELECT NOME, NUMERO, ESTADO 
+FROM V_RELATORIO;
+
+NÃO DA ERRO. 
+
+O número vai receber COMO ALIAS o estado.
+
+CUIDADO PRA NÃO PASSAR DESPERCEBIDO */
+
+OPERAÇÕES DE DML EM VIEW:
+
+/* NÃO PERMITIDO: INSERT E DELETE
+PERMITIDO: UPDATE */
+
+
+INSERT INTO V_RELATORIO VALUES
+	('ANDREIA','F','ANDREIA@UOL.COM.BR','CEL','873547864','CENTRO','VITORIA','ES');
+DELETE FROM V_RELATORIO WHERE NOME = 'JORGE';
+
+=
+ERROR 1394 (HY000): Can >> not insert into join << view 'comercio.v_relatorio' without fields list
+ERROR 1395 (HY000): Can not delete from join view 'comercio.v_relatorio'
+
+/* não pode inserir e deletar informações de VIEWS que tem JOIN em sua composição (pq envolve mais de 1 tabela)
+Se a VIEW NÃO tiver nenhum JOIN pode fazer deleções e inserções */
+
+PORÉM: 
+UPDATE V_RELATORIO SET NOME = 'JOSE' WHERE NOME = 'JORGE';  -- UPDATE FUNCIONA
+-- nesse caso só mudou o nome, o resto das informações não (email)
+** Se a VIEW tiver 2 colunas, e a tabela tiver 5, quando der update só será add 2 informações (e não as outras 3)
+
+-- RESUMINDO: SE FOR PRA FICAR MODIFICANDO OS DADOS NÃO USE O VIEW
+
+SELECT -- PRA ISSO QUE SERVE, USE SEM MODERAÇÃO
+
+
+-------------------------------
+
+ORDER BY -- ÚNICA MANEIRA DE ORDENAR UMA TABELA.
+
+
+CREATE TABLE ALUNOS(
+	NUMERO INT,
+	NOME VARCHAR(30)
+);
+
+INSERT INTO ALUNOS VALUES(1,'JOAO');
+INSERT INTO ALUNOS VALUES(1,'MARIA');
+INSERT INTO ALUNOS VALUES(2,'ZOE');
+INSERT INTO ALUNOS VALUES(2,'ANDRE');
+INSERT INTO ALUNOS VALUES(3,'CLARA');
+INSERT INTO ALUNOS VALUES(1,'CLARA');
+INSERT INTO ALUNOS VALUES(4,'MAFRA');
+INSERT INTO ALUNOS VALUES(5,'JANAINA');
+INSERT INTO ALUNOS VALUES(1,'JANAINA');
+INSERT INTO ALUNOS VALUES(3,'MARCELO');
+INSERT INTO ALUNOS VALUES(4,'GIOVANI');
+INSERT INTO ALUNOS VALUES(5,'ANTONIO');
+INSERT INTO ALUNOS VALUES(6,'ANA');
+INSERT INTO ALUNOS VALUES(6,'VIVIANE'); 
+
+SELECT * FROM ALUNOS
+ORDER BY NUMERO;  -- ORDENA NUMERICAMENTE.
+
+SELECT * FROM ALUNOS
+ORDER BY 1;  -- NUMERO DA COLUNA, NESSE CASO É O NUMERO
+
+SELECT * FROM ALUNOS
+ORDER BY 2; -- NUMERO DA COLUNA, NESSE CASO É O NOME
+
+
+
+/* ORDENANDO POR MAIS DE UMA COLUNA */
+
+SELECT * FROM ALUNOS
+ORDER BY 1; -- ORDENOU A PRIMEIRA COLUNA MAS A OUTRA FICOU ALEATÓRIA
+
+SELECT * FROM ALUNOS
+ORDER BY NUMERO, NOME;  -- ORDENOU A PRIMEIRA COLUNA E A SEGUNDA COLUNA
+
+SELECT * FROM ALUNOS
+ORDER BY 1, 2;  -- PODE USAR O NUMERO DA COLUNA PARA DESCREVER A ORDEM DE ORGANIZAÇÃO DAS COLUNAS.
+
+
+
+/* MESCLANDO ORDER BY COM PROJECAO */
+
+SELECT NOME FROM ALUNOS -- VC SÓ TA CHAMANDO 1 COLUNA ENTÃO NÃO TEM COMO ORDENAR 2 COLUNAS;
+ORDER BY 1, 2;  -- PEDINDO PRA ORDENAR AS COLUNAS PELOS NÚMEROS DELAS. 
+
+
+SELECT NOME FROM ALUNOS  -- NESSE CASO FUNCIONA PQ VC TA CHAMANDO O NOME DA COLUNA E NÃO A POSIÇÃO DELA
+ORDER BY NUMERO, NOME; 
+
+
+
+/* ORDER BY DESC / ASC */
+
+
+SELECT * FROM ALUNOS
+ORDER BY 1 ASC;  -- ASCENDENTE > (SE OMITIR ELE ENTENDE COMO ASC)
+
+SELECT * FROM ALUNOS
+ORDER BY 1 DESC;  -- DESCENDENTE <
+
+SELECT * FROM ALUNOS
+ORDER BY 1, 2 DESC; -- NUMERO ASC E NOME DESC (O desc vai só pro 2)
+
+SELECT * FROM ALUNOS
+ORDER BY 1 DESC, 2 DESC; -- NUMERO E NOME DESC
+
+
+
+/* ORDENANDO COM JOINS */
+
+
+SELECT  C.NOME, 
+		C.SEXO, 
+		IFNULL(C.EMAIL,'************') AS "E-MAIL", 
+		T.TIPO, 
+		T.NUMERO, 
+		E.BAIRRO, 
+		E.CIDADE, 
+		E.ESTADO
+FROM CLIENTE C 
+INNER JOIN TELEFONE T 
+ON C.IDCLIENTE = T.ID_CLIENTE 
+INNER JOIN ENDERECO E 
+ON C.IDCLIENTE = E.ID_CLIENTE
+ORDER BY 1; -- NOMES EM ORDEN ASC
+
+
+SELECT * FROM V_RELATORIO
+ORDER BY 1; -- MESMA COISA DE CIMA.
+
+-- SEMPRE SE UTILIZA POR ÚLTIMO. 
+
+--------------------------------------------
+
 
 
 
