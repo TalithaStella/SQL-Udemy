@@ -1,0 +1,44 @@
+﻿/* Comentário SQL (tem que abrir e fechar)*/
+/* Só no MYSQL é com # */
+
+/* Modelagem BASICA - Entidade = Tabela */
+
+
+(Modelagem conceitual)
+CLIENTE: 
+
+(definição de tipagem)
+NOME: Carac (30)
+CPF: Num (11)
+EMAIL: Carac (30)
+TELEFONE: Carac (30)
+END. Carac (100)
+SEXO: Carac (1)
+
+/* PROCESSOS DE MODELAGEM 
+
+Fase 01 e 02 - AD (adm dados) */
+
+MODELAGEM CONCEITUAL - (MAIS PRIMITIVA) - A Teoria de um projeto/rascunho (se escreve em qq lugar/que nem acima)
+MODELAGEM LÓGICA - usa a modelagem conceitual e leva para outro software (CrModelo/UML/Workbank = Programa de modelagem)
+
+/* Fase 03 - DBA / AD */
+
+MODELAGEM FÍSICA - Script de banco
+
+Transcrever para script de BD
+
+Banco de dados é composto por tabelas onde os usuários guardam os dados!! 
+
+MySQL = sistema de gerenciamento de banco de dados (SGBD)
+Dentro do SGBD existem vários bancos. 
+Vamos criar 1 desses bancos, mas vem com mais bancos (bancos de sistema). 
+
+MySQL - Não se escreve o teste no prompt pq ele execulta tudo e n tem como alterar 
+
+/* Iniciando a modelagem física */
+
+Depois copia e cola lá
+
+
+

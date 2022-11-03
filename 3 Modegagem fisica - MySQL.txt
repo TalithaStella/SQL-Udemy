@@ -1,0 +1,73 @@
+﻿Banco de dados é composto por tabelas onde os usuários guardam os dados!! 
+
+MySQL = sistema de gerenciamento de banco de dados (SGBD)
+Dentro do SGBD existem vários bancos. 
+Vamos criar 1 desses bancos, mas vem com mais bancos (bancos de sistema). 
+
+MySQL - Não se escreve o teste no prompt pq ele execulta tudo e n tem como alterar 
+
+/* Iniciando a modelagem física */
+
+Depois copia e cola lá
+
+/* Criando o BD */
+
+CREATE DATABASE PROJETO;
+
+/* (COPIAR E COLAR NO MYSQL = CLICK DIREITO) */
+
+/* CONECTANDO AO BANCO
+A partir do momento que o projeto já esta criado use o comando a baixo para acessar */
+
+USE PROJETO;
+
+/* CRIANDO A TABELA CLIENTE */
+
+CREATE TABLE CLIENTE (
+	NOME VARCHAR(30),
+	SEXO CHAR (1),
+	EMAIL VARCHAR(30),
+	CPF INT (11), 
+	TELEFONE VARCHAR(30),
+	ENDEREÇO VARCHAR(30)
+);
+
+/* QUANDO TERMINA A TABELA N PODE COLOCAR A VIRGULA
+	VARCHAR - 
+	CHAR - 
+TUNING - DEIXA O BANCO DE DADOS MAIS RÁPIDO DE SER ACESSADO
+
+{ SEGMENTOS banco: 
+AD - Adm Dados: Cuida dos dados
+DBA - Infraestrutura dos bancos
+TN -  tunning: Rapidez/Performace
+BI - Business intelligence: O que ocorreu (passado)
+DS - Data Science:  O que pode ocorrer/insits (?)
+MD - Mineração de dados: Ligado a DS (?)
+}
+
+As áreas tem uma linha de TEMPORARY
+
+[AD/DBA (OLTP) - BI (OLAP) - DS (Com base no passado preve o futuro) = Juntando isso = Tunning 
+
+/*	VERIFICANDO AS TABELAS DO BANCO */
+
+SHOW TABLES; 
+(Mostra as tabelas do banco)
+
+/* DESCOBRINDO COMO É A ESTRUTURA DE UMA TABELA */
+
+DESC CLIENTE;
+(DESCRIBE: Mostra como é a tabela)
+
+/* INSERINDO DADOS NA TABELA */
+
+/* SINTAXE BÁSICA DE INSERÇÃO - INSERT INTO TABELA */
+
+FORMA 1: EXCLUINDO COLUNAS
+
+
+
+
+
+

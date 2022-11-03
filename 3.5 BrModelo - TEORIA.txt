@@ -1,0 +1,66 @@
+﻿BrModelo - Modelagem lógica: 
+
+Adicionar os elementos da modelagem conceitual.
+
+Entidade = Tabela
+
+Atributo = Campos/Registros
+atributo vazio = colunas das tabelas
+atributo preenchidos = ID
+
+- Quando adiciona muitos atributos começa a ficar horrível de visualizar (arrasta pra onde tem mais espaço pra se organizar primeiro), então clica NA ENTIDADE e aperta ctrl + O até arrumar
+ 
+ 
+REGRAS DE OBRIGATORIEDADE E CARDINALIDADE. 
+
+"1 - TODO CAMPO VETORIZADO SE TORNARÁ OUTRA TABELA
+
+[AMARELO, AZUL, LARANJA, VERDE] -> CORES
+[CELULAR, TELFIXO, FAX]-> TELEFONES
+
+2 - TODO CAMPO MULTIVALORADO SE TORNARÁ OUTRA TABELA. QUANDO O CAMPO FOR DIVISÍVEL
+(endereço [ RUA, BAIRRO, CIDADE, ESTADO] (não são a mesma coisa, mas são várias informações)
+
+
+3 - TODA TABELA NECESSITA DE PELO MENOS UM CAMPO QUE IDENTIFIQUE
+TODO O REGISTRO COMO SENDO UNICO. >> ISSO É O QUE CHAMAMOS DE CHAVE PRIMARIA OU PRIMARY KEY."
+
+
+Então, neste caso eu preciso de uma tabela pros registros do cliente, outra para os telefones, e outra para o endereço, cada uma com 1 ID
+
+Depois de criar as tabelas é necessário criar a ligação entre elas: LIGAR OBJETOS 
+Utilizar o termo "possui" ou "tem" para estabelecer coneções. 
+
+ESSAS CONEXÕES SÃO LIGADAS PELA OBRIGATORIEDADE E CARDINALIDADE. 
+onde:
+
+OBRIGATORIEDADE: define se é uma informação essencial ou não
+CARDINALIDADE: define quantos registros do assunto podem ser cadastratos 
+
+ISSO QUEM DEFINE É O PLANO DE NEGÓCIO, E NÃO O ANALISTA
+
+Em nosso negócio: 
+"ENDEREÇO OBRIGATÓRIO
+CADASTRO DE SOMENTE 1
+
+TELEFONE - NÃO OB.
+CASTRATRO DE MAIS DE UM (OPÇCIONAL)"
+
+Então dados obrigatórios = CLIENTE, ENDEREÇO
+
+OBRIGATORIEDADE: 1 OU 0, onde 1 OBRIGATÓRIO e 0 NÃO OBRIGATÓRIO
+CARDINALIDADE: 1 OU N, onde 1 NÚM MAX e N QTY A SER DEFINIDA
+
+
+PARA LINKAR UMA COISA COM A OUTRA ALÉM DE USAR A CHAVE DE LIGAÇÃO (conceitual) TAMBÉM PRECISA DA CHAVE ESTRANGEIRA OU FOREIGN KEY (FK)(FÍSICO)
+
+A FK É ADICIONADA LEVANDO REGRAS EM CONSIDERAÇÃO: 
+
+"1 EM RELACIONAMENTOS 1X1 A FK FICA NA TABELA MAIS FRACA (depende do negocio: Loja = cliente | Estacionamento = Carro)
+
+
+2 EM RELACIONAMENTO 1XN A FK FICA NA CARDINALIDADE N (nesse caso o telefone)"
+
+Essa FK também é add no BRmodelo (conceitual) - ATIBUTO PREENCHIDO
+
+

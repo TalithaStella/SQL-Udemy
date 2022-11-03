@@ -1,0 +1,80 @@
+/* exercicio */
+
+/* Considerando o que vc aprendeu sobre performance, resolva os exercicios abaixo */
+
+
+--Traga os funcionarios que trabalhem
+--no departamento de filmes OU no
+--departamento de roupas
+
+
+SELECT COUNT(*), departamento
+FROM FUNCIONARIOS
+group by departamento
+ORDER BY 1;
+
+-- 21 FILMES | 53 ROUPAS
+
+SELECT nome, departamento FROM funcionarios
+WHERE departamento = 'ROUPAS'
+OR departamento = 'FILMES';
+
+
+-- O gestor de marketing pediu a lista das funcionarias (AS) = FEMININO que trabalhem no departamento de filmes ou no departamento lar. 
+-- Ele necessita enviar um email para as colaboradoras desses dois setores. 
+
+SELECT COUNT(*), sexo, departamento
+FROM FUNCIONARIOS
+group by sexo, departamento;
+
+Lar = 32 F
+Filmes = 9 F
+MULHERES = 491
+
+
+SELECT nome, sexo, email, departamento FROM funcionarios
+WHERE (DEPARTAMENTO = 'LAR' OR departamento = 'FILMES')
+AND SEXO = 'FEMININO';
+
+SELECT nome, sexo, email, departamento FROM funcionarios
+WHERE 
+(DEPARTAMENTO = 'LAR' AND SEXO = 'FEMININO')
+OR
+(DEPARTAMENTO = 'FILMES' AND SEXO = 'FEMININO');
+
+-- Traga os funcionarios do sexo masculino ou os funcionarios que trabalhem no setor Jardim
+
+
+SELECT COUNT(*), sexo
+FROM FUNCIONARIOS
+group by sexo;
+
+SELECT COUNT(*), DEPARTAMENTO, SEXO
+FROM FUNCIONARIOS
+group by DEPARTAMENTO, SEXO;
+
+SEXO M = 484
+JARDIM = 47 (23 'F')
+
+SELECT nome, sexo, departamento FROM funcionarios
+WHERE sexo = 'MASCULINO'
+OR DEPARTAMENTO = 'JARDIM';
+
+
+
+create database exercicio;
+
+use exercicio;
+
+create table funcionarios
+  (
+      idFuncionario integer,
+      nome varchar(100),
+      email varchar(200),
+      sexo varchar(10),
+      departamento varchar(100),
+      admissao varchar(10),
+      salario integer,
+      cargo varchar(100),
+      idRegiao int
+  );
