@@ -358,7 +358,19 @@ DDL - DATA DEFINITION LANGUAGE (definição/tipagem)
 
 Varchar, char, enum, INT,  e modificação de tabela. */
 
+--------------------------------------------
 
+Anotação de Peter Chen (?) -- 1,n/1,1/0,n 
+(BrModelo) - Mais leve, mas buga
+		   - Mais poluído
+
+
+Anotação de cross -- 1 traço:  1 
+				  -- 3 linhas: n (muitos)
+(StarUML) - mais clean
+		  - Usado em arquitetura de dados
+
+--------------------------------------------
 
 
 DROP TABLE = APAGA A TABELA!!!
@@ -911,7 +923,89 @@ ORDER BY 1; -- MESMA COISA DE CIMA.
 
 -- SEMPRE SE UTILIZA POR ÚLTIMO. 
 
---------------------------------------------
+---------------------------------------
+DELIMITADOR -- SEMPRE MUDAR QUANDO FOR PROGRAMAR COM SQL (ASSUNTO 4)
+
+/*; = DELIMITADOR/DELIMITER padrão do SQL: O banco só executa quando ver o ;
+
+As vezes */
+
+
+STATUS /* COMANDO DE ESTRUTURA */: MOSTRA OS DADOS DO SQL 
+"Using delimiter: ; " mostra qual é o delimitador que esta sendo usando. 
+"Uptime: " Mostra o tempo que o banco esta aberto p
+
+pra programar no banco tem que mudar o demiliter
+
+DELIMITER $  -- MUDA o demiliter (agora o delimiter é $)
+
+** CUIDADO COM ESPAÇOS E MUITO CARACTERES NA HORA DE ESTABELECER O DEMILITER! (VERSÕES ANTERIORES DO SQL ACEITAVA ESPAÇO COMO DELIMITER)
+** FECHAR E ABRIR O BANCO FAZ VOLTAR O DELIMITER (;)
+
+
+/* FUNÇÕES DE AGREGAÇÃO NUMÉRICAS */
+
+
+CREATE TABLE VENDEDORES(
+	IDVENDEDOR INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30),
+	SEXO CHAR(1),
+	JANEIRO FLOAT(10,2),
+	FEVEREIRO FLOAT(10,2),
+	MARCO FLOAT(10,2)
+);
+
+INSERT INTO VENDEDORES VALUES(NULL,'CARLOS','M',76234.78,88346.87,5756.90);
+INSERT INTO VENDEDORES VALUES(NULL,'MARIA','F',5865.78,6768.87,4467.90);
+INSERT INTO VENDEDORES VALUES(NULL,'ANTONIO','M',78769.78,6685.87,6664.90);
+INSERT INTO VENDEDORES VALUES(NULL,'CLARA','F',5779.78,446886.87,8965.90);
+INSERT INTO VENDEDORES VALUES(NULL,'ANDERSON','M',676545.78,77544.87,578665.90);
+INSERT INTO VENDEDORES VALUES(NULL,'IVONE','F',57789.78,44774.87,68665.90);
+INSERT INTO VENDEDORES VALUES(NULL,'JOAO','M',4785.78,66478.87,6887.90);
+INSERT INTO VENDEDORES VALUES(NULL,'CELIA','F',89667.78,57654.87,5755.90);
+
+
+-- FUNÇÃO MAX/MIN/AVG - TRAZ O VALOR MÁXIMO, MÍNIMO E MÉDIO DE UMA COLUNA, RESPECTIVAMENTE.
+
+SELECT MAX(FEVEREIRO) AS MAIOR_FEV 
+FROM VENDEDORES;
+
+SELECT MIN(FEVEREIRO) AS MENOR_FEV 
+FROM VENDEDORES;
+
+
+SELECT AVG(FEVEREIRO) AS MEDIA_FEV 
+FROM VENDEDORES;
+
+-- MISTURANDO AS FUNÇÕES
+
+SELECT MAX(JANEIRO) AS MAX_JAN, 
+	   MIN(JANEIRO) AS MIN_JAN,
+	   AVG(JANEIRO) AS MEDIA_JAN
+FROM VENDEDORES;
+
++-----------+---------+---------------+
+| MAX_JAN   | MIN_JAN | MEDIA_JAN     |
++-----------+---------+---------------+
+| 676545.75 | 4785.78 | 124429.901794 | <- MUITOS NÚMEROS
++-----------+---------+---------------+
+
+
+-- FUNÇÃO TRUNCATE = TRUNCA VALORES REMOVE AS VÍRGULAS.
+--TRUNCATE(O QUE VC VAI REDUZIR(FUNÇAO), NUM DE VIRGULAS)
+
+SELECT MAX(JANEIRO) AS MAX_JAN, 
+	   MIN(JANEIRO) AS MIN_JAN,
+	   TRUNCATE(AVG(JANEIRO),2) AS MEDIA_JAN
+FROM VENDEDORES;
+
++-----------+---------+-----------+
+| MAX_JAN   | MIN_JAN | MEDIA_JAN |
++-----------+---------+-----------+
+| 676545.75 | 4785.78 | 124429.90 | <- 2 NUM DPS DA VIRGULA
++-----------+---------+-----------+
+
+
 
 
 
