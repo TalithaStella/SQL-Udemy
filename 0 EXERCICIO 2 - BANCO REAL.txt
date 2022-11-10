@@ -20,7 +20,7 @@ WHERE departamento = 'ROUPAS'
 OR departamento = 'FILMES';
 
 
--- O gestor de marketing pediu a lista das funcionarias (AS) = FEMININO que trabalhem no departamento de filmes ou no departamento lar. 
+-- O gestor de marketing pediu a lista das funcionarias (AS) que trabalhem no departamento de filmes ou no departamento lar. 
 -- Ele necessita enviar um email para as colaboradoras desses dois setores. 
 
 SELECT COUNT(*), sexo, departamento
@@ -41,6 +41,7 @@ WHERE
 (DEPARTAMENTO = 'LAR' AND SEXO = 'FEMININO')
 OR
 (DEPARTAMENTO = 'FILMES' AND SEXO = 'FEMININO');
+
 
 -- Traga os funcionarios do sexo masculino ou os funcionarios que trabalhem no setor Jardim
 
