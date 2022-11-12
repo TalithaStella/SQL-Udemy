@@ -274,6 +274,17 @@ AND EMAIL = 'LILIAN@HOTMAIL.COM'; -- Aqui só vai aparecer a carla com o email e
 
 ---------------------------------------------
 
+
+Hogwarts: 1/10 (250)
+Easteros: 4/10 (340)
+13º andar: 8/10 (290)
+Torre: 81/100 (360)
+Sombras -  Magma: 4/10 (298)
+Tornado: 215/1000 (310)
+Demoníaco: 9/10 (308)
+Ídolos: 1/21 (222)
+
+
 MODELANDO O BANCO DE DADOS: CONSIDERANDO FK, PRIMARY KEY, OBRIGATORIEDADE, CARDINALIDADE:
 
 
@@ -1277,6 +1288,72 @@ REFERENCES PESSOA(COLUNA1);
 
 /* VERIFICAR AS CHAVES */
 SHOW CREATE TABLE TIME;
+
+
+/* A34 - ORGANIZACAO DE CHAVES - CONSTRAINT (REGRA de integridade referencial) 
+Vc só pode criar algo como FK se tiver uma PK para ser referência*/
+
+
+CREATE TABLE JOGADOR(
+	IDJOGADOR INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30)
+);
+
+CREATE TABLE TIMES(
+	IDTIME INT PRIMARY KEY AUTO_INCREMENT,
+	NOMETIME VARCHAR(30),
+	ID_JOGADOR INT,
+	FOREIGN KEY(ID_JOGADOR)
+	REFERENCES JOGADOR(IDJOGADOR)
+);
+
+
+/* Aparece um nome de constraint aleatório pq a gente não definiu uma, o que é considerado uma 'pratica ruim'.
+Para nomear as constraints tem que criar as chaves e as constraint por fora da tabela (???) */
+
+ /* Dicionário de dados: Mostra View, procedures, chaves e outras coisas que nos comantos aprendidos até agora ainda n aparece. Por isso é importante 
+ colocar nome nas chaves */
+
+INSERT INTO JOGADOR VALUES(NULL,'GUERRERO');
+INSERT INTO TIMES VALUES(NULL,'FLAMENGO',1);
+
+SHOW CREATE TABLE JOGADOR;
+SHOW CREATE TABLE TIMES;
+
+
+
+--------------------------------------
+
+
+
+/* A35 - ORGANIZANDO CHAVES
+ */
+
+SHOW TABLES;
+
+DROP TABLE ENDERECO;
+DROP TABLE TELEFONE;
+DROP TABLE CLIENTE;
+
+CREATE TABLE CLIENTE(
+	IDCLIENTE INT,
+	NOME VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE TELEFONE(
+	IDTELEFONE INT,
+	TIPO CHAR(3) NOT NULL,
+	NUMERO VARCHAR(10) NOT NULL,
+	ID_CLIENTE INT
+);
+
+ALTER TABLE CLIENTE ADD CONSTRAINT PK_CLIENTE
+PRIMARY KEY(IDCLIENTE);
+
+ALTER TABLE TELEFONE ADD CONSTRAINT FK_CLIENTE_TELEFONE
+FOREIGN KEY(ID_CLIENTE) REFERENCES CLIENTE(IDCLIENTE);
+
+SHOW CREATE TABLE TELEFONE;
 
 
 
