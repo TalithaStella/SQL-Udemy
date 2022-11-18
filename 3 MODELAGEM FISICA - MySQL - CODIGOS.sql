@@ -1322,18 +1322,48 @@ SHOW CREATE TABLE TIMES;
 
 
 
---------------------------------------
-
-
-
-/* A35 - ORGANIZANDO CHAVES
- */
+/* A35 - ORGANIZANDO CHAVES / ações de constraint */
 
 SHOW TABLES;
+
+
+*************ATUALIZAR ISSO NO MEU BD *******************
+****** NÃO APAGUEI AS TABELAS ******
 
 DROP TABLE ENDERECO;
 DROP TABLE TELEFONE;
 DROP TABLE CLIENTE;
+
+-- Tem que apagar nessa ordem pq 'tem dependencia'
+
+/* Outra razão para criar as chaves por fora: 
+Se eu tenho 3 tabelas e uma tabela precisa referenciar a outra não da pra colocar um foreing key onde não tem uma primary key.
+
+Então em ambiente de trabalho eu crio todas as tabelas: 
+create table
+create table
+create table
+
+E depois as ALTER TABLE com as constraint que eu preciso
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+
+Fica melhor para outras pessoas que pegam o scrip conseguir entender melhor
+
+ */
+
+ /* Como fizemos a primeira vez:
+
+
+ CREATE TABLE CLIENTE(
+	IDCLIENTE INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30) NOT NULL,
+	SEXO ENUM('M', 'F') NOT NULL,
+	EMAIL VARCHAR(50) UNIQUE,
+	CPF VARCHAR(15) UNIQUE
+);  */
 
 CREATE TABLE CLIENTE(
 	IDCLIENTE INT,
@@ -1347,13 +1377,67 @@ CREATE TABLE TELEFONE(
 	ID_CLIENTE INT
 );
 
-ALTER TABLE CLIENTE ADD CONSTRAINT PK_CLIENTE
+ALTER TABLE CLIENTE ADD CONSTRAINT PK_CLIENTE -- add constraint: add uma regra
 PRIMARY KEY(IDCLIENTE);
 
-ALTER TABLE TELEFONE ADD CONSTRAINT FK_CLIENTE_TELEFONE
+ALTER TABLE TELEFONE ADD CONSTRAINT FK_CLIENTE_TELEFONE --foreingkey_origem_destino 
 FOREIGN KEY(ID_CLIENTE) REFERENCES CLIENTE(IDCLIENTE);
 
 SHOW CREATE TABLE TELEFONE;
+
+-- Agora quando vc da o show table o nome da constraint aparece como "FK_cliente_telefone"
+
+
+
+/* DICIONARIO DE DADOS 
+
+Como procurar coisas no dicionário de dados:
+Guarda meta dado = dados dos dados
+armazena os dados das tabelas e dos dados armazenados nelas
+
+no SHOW DATABASES pararece alguns bancos que o SQL usa pra armazenar dados dele mesmo (USE INFORMATION_SCHEMA;)
+
+*procurar constraint: Aparece como 'TABLE_CONSTRAINT'  */
+
+
+SHOW DATABASES;
+
+USE INFORMATION_SCHEMA; -- Onde estão as constraints
+
+STATUS -- pra verqual banco esta sendo usado. 
+
+SHOW TABLES; -- um monte de coisa
+
+DESC TABLE_CONSTRAINTS; 
+
+SELECT CONSTRAINT_SCHEMA AS "BANCO",
+	   TABLE_NAME AS "TABELA",
+	   CONSTRAINT_NAME AS "NOME REGRA",
+	   CONSTRAINT_TYPE AS "TIPO"
+	   FROM TABLE_CONSTRAINTS
+	   WHERE CONSTRAINT_SCHEMA = 'COMERCIO';
+
+
+
+/* APAGANDO CONSTRAINTS 
+
+as vezes precisa apagar, pq se precisa fazer 'update em massa(milhoes de dados novos)' ele vai ficar batendo 1 por 1 milhares de vezes
+Pelo tempo de processamento vale apena apagar e depois criar dnv
+
+Risco que pode acontecer: upar alguma coisa com a chave não compatível, aí vai dar erro. 
+
+*/
+
+USE COMERCIO;
+
+ALTER TABLE TELEFONE
+DROP FOREIGN KEY FK_CLIENTE_TELEFONE;
+
+ALTER TABLE TELEFONE ADD CONSTRAINT FK_CLIENTE_TELEFONE
+FOREIGN KEY(ID_CLIENTE) REFERENCES CLIENTE(IDCLIENTE);7
+
+******************* FAZER O EXERCÍCIO SEÇÃO 18 *******************
+
 
 
 
