@@ -1511,7 +1511,195 @@ BEGIN
 END
 $
 
-Aula 82, em 13".
+Aula 82, em 13 min.
+
+/* SOBRE BACKUP: 
+
+A opção acima foi fazer backup de uma informação adicionando em uma outra tabela (BKP_UDUARIO), mas podemos usar outros
+meios de backup, como um outro hardware (SSD/HD) ou de um banco para outro através de trigger.
+
+BACKUP EM BANCO DE DADOS (SEJA EM OUTRO BANCO OU EM OUTRA TABELA) = LÓGICO
+BACK UP EM OUTRAS EXTENSÕES (.BKP) = FÍSICO
+ 
+
+ -- Comunicação entre bancos
+
+Criar um banco de BACKUPs além do banco de trabalho
+*/
+
+CREATE DATABASE LOJA; -- Banco do cliente
+
+USE LOJA;
+
+CREATE TABLE PRODUTO(
+	IDPRODUTO INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30),
+	VALOR FLOAT(10,2)
+);
+
+STATUS 
+
+CREATE DATABASE BACKUP; -- Criação de banco só pra backup
+
+USE BACKUP;
+
+CREATE TABLE BKP_PRODUTO(
+	IDBKP INT PRIMARY KEY AUTO_INCREMENT,
+	IDPRODUTO INT,
+	NOME VARCHAR(30),
+	VALOR FLOAT(10,2)
+);
+
+USE LOJA; -- Voltar para o banco de trabalho
+
+-- BANCO.ESCHEMA.TABELA = comunicação entre tabelas
+
+	INSERT INTO BACKUP.BKP_PRODUTO VALUES (NULL, 1000, 'TESTE', 0.0); -- ESSE INSERT NÃO CONSEGUE SE COMUNICAR ENTRE TABELAS
+
+SELECT * FROM BACKUP.BKP_PRODUTO;
+
+DELIMITER $
+
+-- NOTE QUE A TRIGGER É CRIADA NO BANCO DE TRABALHO!!!
+
+--TRIGGER QUE SALVA TUDO QUE FOI INSERIDO
+CREATE TRIGGER BACKUP_PRODUTO
+BEFORE INSERT ON PRODUTO
+FOR EACH ROW
+BEGIN 
+	INSERT INTO BACKUP.BKP_PRODUTO VALUES (NULL, NEW.IDPRODUTO, NEW.NOME, NEW.VALOR);  
+	--TEM QUE COLOCAR O INSERT ACIMA DENTRO DA TRIGGER PRA TER COMUNICAÇÃO. TEM QUE COLOCAR NEW (BEFORE). NOME DE CADA COLUNA DA TABELA
+
+END
+$
+
+DELIMITER ;
+
+-- INSERIR OS DADOS NO BANCO NORMALMENTE: 
+
+INSERT INTO PRODUTO VALUES(NULL,'LIVRO MODELAGEM',50.00);
+INSERT INTO PRODUTO VALUES(NULL,'LIVRO BI',80.00);
+INSERT INTO PRODUTO VALUES(NULL,'LIVRO ORACLE',70.00);
+INSERT INTO PRODUTO VALUES(NULL,'LIVRO SQL SERVER',100.00);
+
+
+SELECT * FROM PRODUTO;
+
++-----------+------------------+--------+
+| IDPRODUTO | NOME             | VALOR  |
++-----------+------------------+--------+
+|         1 | LIVRO MODELAGEM  |  50.00 |
+|         2 | LIVRO BI         |  80.00 |
+|         3 | LIVRO ORACLE     |  70.00 |
+|         4 | LIVRO SQL SERVER | 100.00 |
++-----------+------------------+--------+
+
+
+
+SELECT * FROM BACKUP.BKP_PRODUTO;
+
++-------+-----------+------------------+--------+
+| IDBKP | IDPRODUTO | NOME             | VALOR  |
++-------+-----------+------------------+--------+
+|     1 |         0 | LIVRO MODELAGEM  |  50.00 |
+|     2 |         0 | LIVRO BI         |  80.00 |
+|     3 |         0 | LIVRO ORACLE     |  70.00 |
+|     4 |         0 | LIVRO SQL SERVER | 100.00 |
++-------+-----------+------------------+--------+
+
+
+DELIMITER $
+
+--TRIGGER QUE SALVA TUDO QUE FOR APAGADO 
+CREATE TRIGGER BACKUP_PRODUTO_DEL -- COLOCA O NOME COM A FUNÇÃO DA TRIGGER
+BEFORE DELETE ON PRODUTO
+FOR EACH ROW
+BEGIN 
+	INSERT INTO BACKUP.BKP_PRODUTO VALUES (NULL, OLD.IDPRODUTO, OLD.NOME, OLD.VALOR);  
+	
+END
+$
+
+DELIMITER ;
+
+DELETE FROM PRODUTO WHERE IDPRODUTO = 2;
+
+SELECT * FROM PRODUTO;
+
+SELECT * FROM BACKUP.BKP_PRODUTO;
+
++-------+-----------+------------------+--------+
+| IDBKP | IDPRODUTO | NOME             | VALOR  |
++-------+-----------+------------------+--------+
+|     1 |         0 | LIVRO MODELAGEM  |  50.00 |
+|     2 |         0 | LIVRO BI         |  80.00 |
+|     3 |         0 | LIVRO ORACLE     |  70.00 |
+|     4 |         0 | LIVRO SQL SERVER | 100.00 |
+|     5 |         2 | LIVRO BI         |  80.00 | <-
++-------+-----------+------------------+--------+
+
+
+/* Quando faz a trigger antes de inserir ele não recebe número de ID, pq é um campo auto_increment (dado só é gravado
+depois de ser inserida na tabela). Então quando for fazer esse tipo de armazenamento usar 'AFTER' INSERT. 
+A triggger de delete como é old já consegue pegar o dado. */
+
+DROP TRIGGER BACKUP_PRODUTO;
+
+DELIMITER $
+
+CREATE TRIGGER BACKUP_PRODUTO
+AFTER INSERT ON PRODUTO
+FOR EACH ROW
+BEGIN 
+	INSERT INTO BACKUP.BKP_PRODUTO VALUES (NULL, NEW.IDPRODUTO, NEW.NOME, NEW.VALOR);  
+	
+END
+$
+
+DELIMITER ;
+
+INSERT INTO PRODUTO VALUES(NULL,'LIVRO C#',100.00);
+
+SELECT * FROM PRODUTO;
+
++-----------+------------------+--------+
+| IDPRODUTO | NOME             | VALOR  |
++-----------+------------------+--------+
+|         1 | LIVRO MODELAGEM  |  50.00 |
+|         3 | LIVRO ORACLE     |  70.00 |
+|         4 | LIVRO SQL SERVER | 100.00 |
+|         5 | LIVRO C#         | 100.00 |
++-----------+------------------+--------+
+
+SELECT * FROM BACKUP.BKP_PRODUTO;
+
++-------+-----------+------------------+--------+
+| IDBKP | IDPRODUTO | NOME             | VALOR  |
++-------+-----------+------------------+--------+
+|     1 |         0 | LIVRO MODELAGEM  |  50.00 |
+|     2 |         0 | LIVRO BI         |  80.00 |
+|     3 |         0 | LIVRO ORACLE     |  70.00 |
+|     4 |         0 | LIVRO SQL SERVER | 100.00 |
+|     5 |         2 | LIVRO BI         |  80.00 |
+|     6 |         5 | LIVRO C#         | 100.00 | <<< AGORA TEM O ID PRODUTO PQ USOU AFTER (OU SEJA, DPS DE REGISTRADO)
++-------+-----------+------------------+--------+
+
+
+/* Mas ainda assim, da maneira que está não dá pra saber quais são os valores adicionados no momento de INSERT ou de DELETE. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
